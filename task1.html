@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Post with Excerpt</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        .response {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #f4f4f4;
+            border: 1px solid #ddd;
+        }
+        .footer-area {
+            gap: 12px;
+            display: flex;
+            margin-top: 98%;
+            align-items: center;
+        }
+        a{
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+
+
+<div class="container">
+    <h1>Create Post</h1>
+    <!-- I've added a form to send the user defined sample request -->
+    <form id="postForm">
+        <input type="text" id="title" placeholder="Enter title (e.g., Sample Title)" required>
+        <textarea id="body" placeholder="Enter body content (e.g., Sample post content goes here)" rows="4" required></textarea>
+        <button type="submit">Create Post</button>
+    </form>
+    <!-- Here is the response if submitted to Json Placeholder post API -->
+    <div id="responseContainer" class="response" style="display:none;">
+        <h3>Response:</h3>
+        <p id="responseData"></p>
+    </div>
+</div>
+
+<footer>
+    <div class="container">
+        <div class="footer-area">
+            <p>CT Javascript Follow up Skills Test </p> |
+            <a target="_blank" href="https://github.com/tanvirshaikat/CT-JavaScript-Follow-up-Skills-Test">Github Repository</a>
+        </div>
+    </div>
+</footer>
+
+<script>
+// When the form is submitted, we'll send a POST request to create a new post
+document.getElementById('postForm').addEventListener('submit', async function (event) {
+    event.preventDefault(); // Prevent the form from reloading the page
+
+    // Get the input values
+    const title = document.getElementById('title').value;
+    const body = document.getElementById('body').value;
+
+    // Generate the excerpt from the first 20 characters of the body
+    const excerpt = body.slice(0, 20);
+
+    // Prepare the data to be sent to the API
+    const postData = {
+        title: title,
+        body: body,
+        userId: 1,  // For simplicity, we're using userId 1
+        excerpt: excerpt
+    };
+
+    try {
+        // Send a POST request to the JSONPlaceholder API
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(postData)
+        });
+
+        // Check if the response is OK
+        if (response.ok) {
+            const responseData = await response.json();
+
+            // Show the response data in the HTML
+            document.getElementById('responseContainer').style.display = 'block';
+            document.getElementById('responseData').innerHTML = `
+                <strong>Post Created:</strong><br>
+                <strong>ID:</strong> ${responseData.id}<br>
+                <strong>Title:</strong> ${responseData.title}<br>
+                <strong>Body:</strong> ${responseData.body}<br>
+                <strong>Excerpt:</strong> ${responseData.excerpt}
+            `;
+        } else {
+            // Handle API errors
+            alert('Error creating post. Please try again later.');
+        }
+    } catch (error) {
+        // Handle any other errors (network issues, etc.)
+        console.error('Error:', error);
+        alert('An error occurred. Please try again.');
+    }
+});
+</script>
+
+</body>
+</html>
